@@ -91,6 +91,12 @@ def render_html(browser, url, wait_selector=None, extra_wait_ms=EXTRA_WAIT_MS):
         locale="pl-PL",
         viewport={"width": 1366, "height": 900},
     )
+    # Podstawowe "zatuszowanie" tego, że to zautomatyzowana przeglądarka —
+    # niektóre serwisy (np. Allegro) sprawdzają te sygnały i serwują stronę
+    # weryfikacyjną zamiast treści, jeśli je wykryją.
+    context.add_init_script(
+        "Object.defineProperty(navigator, 'webdriver', {get: () => undefined});"
+    )
     page = context.new_page()
     html = None
     try:
@@ -104,6 +110,16 @@ def render_html(browser, url, wait_selector=None, extra_wait_ms=EXTRA_WAIT_MS):
                 pass
         page.wait_for_timeout(extra_wait_ms)
         html = page.content()
+
+        # Diagnostyka: jeśli strona wygląda na blokadę/weryfikację, zostaw o
+        # tym ślad w logu, żeby łatwiej było to rozpoznać.
+        title = page.title()
+        lowered = html.lower()
+        block_markers = ["captcha", "just a moment", "access denied", "potwierdź, że",
+                          "sprawdzamy, czy", "unusual traffic", "błąd 403", "forbidden"]
+        found_markers = [m for m in block_markers if m in lowered]
+        print(f"  [debug] tytuł strony: {title!r} | długość HTML: {len(html)} znaków"
+              + (f" | możliwa blokada, wykryto: {found_markers}" if found_markers else ""))
     except Exception as e:
         print(f"  Błąd renderowania {url}: {e}")
     finally:
@@ -246,7 +262,9 @@ def main():
     all_new = []  # lista (search_name, listing)
 
     with sync_playwright() as p:
-        browser = p.chromium.launch()
+        browser = p.chromium.launch(
+            args=["--disable-blink-features=AutomationControlled"]
+        )
 
         for search in config.get("searches", []):
             name = search.get("name", search.get("url"))
