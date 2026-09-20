@@ -180,20 +180,16 @@ def parse_allegro(html):
 def parse_allegro_lokalnie(html):
     items = []
     soup = BeautifulSoup(html, "lxml")
-    cards = soup.select("article") or soup.select("a[href*='/oferty/']")
-    seen_hrefs = set()
+    cards = soup.select("article.mlc-itembox__container") or soup.select("article")
     for card in cards:
-        link_tag = card if card.name == "a" else card.select_one("a[href*='/oferty/']")
-        title_tag = card.select_one("h2, h3, [class*='title']")
-        price_tag = card.select_one("[class*='price']")
+        link_tag = card.select_one("a.mlc-card") or card.select_one("a[href*='/oferta/']")
+        title_tag = card.select_one("h3.mlc-itembox__title, h2, h3, [class*='title']")
+        price_tag = card.select_one(".mlc-itembox__price, [class*='price']")
         if not link_tag or not link_tag.get("href"):
             continue
         href = link_tag["href"].split("?")[0]
         if href.startswith("/"):
             href = "https://allegrolokalnie.pl" + href
-        if href in seen_hrefs:
-            continue
-        seen_hrefs.add(href)
         items.append({
             "id": href,
             "title": title_tag.get_text(strip=True) if title_tag else "(brak tytułu)",
