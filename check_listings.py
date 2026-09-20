@@ -4,6 +4,14 @@ i wysyła powiadomienie push na telefon (przez ntfy.sh) gdy pojawią się nowe
 ogłoszenia. Jeśli w jednym uruchomieniu pojawi się kilka nowych ofert naraz,
 są grupowane w jedno zbiorcze powiadomienie zamiast spamu.
 
+Strony pobierane są prawdziwą, headless przeglądarką (Playwright/Chromium),
+a nie zwykłym requests.get — te serwisy blokują (403) proste zapytania HTTP
+z adresów IP centrów danych (jak GitHub Actions), a przeglądarka wygląda
+znacznie bardziej jak prawdziwy użytkownik. To i tak nie daje 100% gwarancji
+ominięcia blokady — jeśli dana platforma nadal zwraca 0 wyników mimo braku
+błędu, to znak, że trzeba dostroić selektor albo rozważyć uruchamianie bota
+z domowego łącza zamiast z GitHub Actions.
+
 Stan "co już widzieliśmy" trzymany jest w data/seen.json — ten plik jest
 commitowany z powrotem do repo przez GitHub Actions po każdym uruchomieniu,
 dzięki czemu bot pamięta co już zgłosił między kolejnymi odpaleniami.
@@ -16,6 +24,7 @@ from pathlib import Path
 
 import requests
 from bs4 import BeautifulSoup
+from playwright.sync_api import sync_playwright
 
 ROOT = Path(__file__).parent
 CONFIG_PATH = ROOT / "config.json"
@@ -24,13 +33,13 @@ SEEN_PATH = ROOT / "data" / "seen.json"
 NTFY_TOPIC = os.environ.get("NTFY_TOPIC")
 NTFY_URL = f"https://ntfy.sh/{NTFY_TOPIC}" if NTFY_TOPIC else None
 
-HEADERS = {
-    "User-Agent": (
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
-        "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
-    ),
-    "Accept-Language": "pl-PL,pl;q=0.9,en;q=0.8",
-}
+USER_AGENT = (
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+    "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
+)
+
+PAGE_LOAD_TIMEOUT_MS = 30000
+EXTRA_WAIT_MS = 2500  # dodatkowy czas na doładowanie treści przez JS
 
 
 def load_json(path, default):
@@ -73,22 +82,46 @@ def send_notification(title, message, click_link=None):
 
 
 # ---------------------------------------------------------------------------
-# Parsery dla poszczególnych platform.
-# UWAGA: struktura HTML tych serwisów zmienia się co jakiś czas — jeśli bot
-# przestanie znajdować ogłoszenia, prawdopodobnie trzeba będzie zaktualizować
-# selektory poniżej (sprawdź "Narzędzia deweloperskie" w przeglądarce).
+# Pobieranie strony prawdziwą przeglądarką (Playwright).
 # ---------------------------------------------------------------------------
 
-def fetch_olx(url):
-    items = []
+def render_html(browser, url, wait_selector=None, extra_wait_ms=EXTRA_WAIT_MS):
+    context = browser.new_context(
+        user_agent=USER_AGENT,
+        locale="pl-PL",
+        viewport={"width": 1366, "height": 900},
+    )
+    page = context.new_page()
+    html = None
     try:
-        resp = requests.get(url, headers=HEADERS, timeout=20)
-        resp.raise_for_status()
-    except requests.RequestException as e:
-        print(f"[OLX] błąd pobierania {url}: {e}")
-        return items
+        page.goto(url, timeout=PAGE_LOAD_TIMEOUT_MS, wait_until="domcontentloaded")
+        if wait_selector:
+            try:
+                page.wait_for_selector(wait_selector, timeout=PAGE_LOAD_TIMEOUT_MS)
+            except Exception:
+                # Selektor mógł się nie pojawić (np. brak wyników albo strona
+                # zmieniła markup) — i tak bierzemy to, co jest na stronie.
+                pass
+        page.wait_for_timeout(extra_wait_ms)
+        html = page.content()
+    except Exception as e:
+        print(f"  Błąd renderowania {url}: {e}")
+    finally:
+        context.close()
+    return html
 
-    soup = BeautifulSoup(resp.text, "lxml")
+
+# ---------------------------------------------------------------------------
+# Parsery dla poszczególnych platform — operują na już wyrenderowanym HTML.
+# UWAGA: struktura tych stron zmienia się co jakiś czas — jeśli bot przestanie
+# znajdować ogłoszenia mimo braku błędów, prawdopodobnie trzeba będzie
+# zaktualizować selektory poniżej (sprawdź "Narzędzia deweloperskie" w
+# przeglądarce → zakładka Elements na stronie wyników).
+# ---------------------------------------------------------------------------
+
+def parse_olx(html):
+    items = []
+    soup = BeautifulSoup(html, "lxml")
     cards = soup.select("div[data-cy='l-card']")
     for card in cards:
         link_tag = card.select_one("a")
@@ -108,19 +141,9 @@ def fetch_olx(url):
     return items
 
 
-def fetch_allegro(url):
+def parse_allegro(html):
     items = []
-    try:
-        resp = requests.get(url, headers=HEADERS, timeout=20)
-        resp.raise_for_status()
-    except requests.RequestException as e:
-        print(f"[Allegro] błąd pobierania {url}: {e}")
-        return items
-
-    soup = BeautifulSoup(resp.text, "lxml")
-    # Allegro renderuje sporo po stronie klienta i ma ochronę antybotową —
-    # ten selektor może wymagać dostrojenia albo może czasem zwracać 0 wyników
-    # nawet gdy oferty istnieją (wtedy warto rozważyć oficjalne REST API Allegro).
+    soup = BeautifulSoup(html, "lxml")
     cards = soup.select("article[data-role='offer']") or soup.select("article")
     for card in cards:
         link_tag = card.select_one("a[href*='/oferta/']")
@@ -138,51 +161,9 @@ def fetch_allegro(url):
     return items
 
 
-def fetch_vinted(url):
-    """
-    Vinted ma silną ochronę antybotową (Datadome) na zwykłym HTML, dlatego
-    korzystamy z ich wewnętrznego (nieoficjalnego) endpointu JSON, który
-    używany jest przez samą stronę. To rozwiązanie może przestać działać,
-    jeśli Vinted zmieni zabezpieczenia — w takim wypadku trzeba będzie
-    poszukać aktualnego sposobu (np. inny endpoint albo pobieranie cookies).
-    """
+def parse_allegro_lokalnie(html):
     items = []
-    try:
-        parsed_query = url.split("?", 1)[1] if "?" in url else ""
-        api_url = f"https://www.vinted.pl/api/v2/catalog/items?{parsed_query}&per_page=20&order=newest_first"
-        session = requests.Session()
-        # Najpierw wejście na stronę, żeby dostać ciasteczka sesyjne.
-        session.get("https://www.vinted.pl/", headers=HEADERS, timeout=20)
-        resp = session.get(api_url, headers=HEADERS, timeout=20)
-        resp.raise_for_status()
-        data = resp.json()
-    except (requests.RequestException, ValueError) as e:
-        print(f"[Vinted] błąd pobierania {url}: {e}")
-        return items
-
-    for item in data.get("items", []):
-        link = item.get("url", "")
-        items.append({
-            "id": str(item.get("id", link)),
-            "title": item.get("title", "(brak tytułu)"),
-            "price": (item.get("price") or {}).get("amount", ""),
-            "link": link,
-        })
-    return items
-
-
-def fetch_allegro_lokalnie(url):
-    items = []
-    try:
-        resp = requests.get(url, headers=HEADERS, timeout=20)
-        resp.raise_for_status()
-    except requests.RequestException as e:
-        print(f"[Allegro Lokalnie] błąd pobierania {url}: {e}")
-        return items
-
-    soup = BeautifulSoup(resp.text, "lxml")
-    # Podobnie jak Allegro — selektor to najlepsza dostępna aproksymacja,
-    # może wymagać dostrojenia jeśli serwis zmieni markup.
+    soup = BeautifulSoup(html, "lxml")
     cards = soup.select("article") or soup.select("a[href*='/oferty/']")
     seen_hrefs = set()
     for card in cards:
@@ -206,11 +187,52 @@ def fetch_allegro_lokalnie(url):
     return items
 
 
-FETCHERS = {
-    "olx": fetch_olx,
-    "allegro": fetch_allegro,
-    "allegro_lokalnie": fetch_allegro_lokalnie,
-    "vinted": fetch_vinted,
+def parse_vinted(html):
+    items = []
+    soup = BeautifulSoup(html, "lxml")
+    # Karty ogłoszeń na Vinted zwykle mają atrybut data-testid zawierający
+    # "item" lub "grid-item" — łapiemy oba warianty na wszelki wypadek.
+    cards = (
+        soup.select("[data-testid*='grid-item']")
+        or soup.select("[data-testid*='item-box']")
+        or soup.select("a[href*='/items/']")
+    )
+    seen_hrefs = set()
+    for card in cards:
+        link_tag = card if card.name == "a" else card.select_one("a[href*='/items/']")
+        if not link_tag or not link_tag.get("href"):
+            continue
+        href = link_tag["href"].split("?")[0]
+        if href.startswith("/"):
+            href = "https://www.vinted.pl" + href
+        if href in seen_hrefs:
+            continue
+        seen_hrefs.add(href)
+        title_tag = card.select_one("[data-testid*='title']") or card.select_one("p, h3")
+        price_tag = card.select_one("[data-testid*='price']")
+        items.append({
+            "id": href,
+            "title": title_tag.get_text(strip=True) if title_tag else "(brak tytułu)",
+            "price": price_tag.get_text(strip=True) if price_tag else "",
+            "link": href,
+        })
+    return items
+
+
+# Selektor, na który warto poczekać przed pobraniem HTML (żeby JS zdążył
+# doładować listę ofert) — None oznacza "po prostu poczekaj EXTRA_WAIT_MS".
+WAIT_SELECTORS = {
+    "olx": "div[data-cy='l-card']",
+    "allegro": "article",
+    "allegro_lokalnie": "article",
+    "vinted": "[data-testid*='grid-item'], a[href*='/items/']",
+}
+
+PARSERS = {
+    "olx": parse_olx,
+    "allegro": parse_allegro,
+    "allegro_lokalnie": parse_allegro_lokalnie,
+    "vinted": parse_vinted,
 }
 
 
@@ -223,28 +245,40 @@ def main():
 
     all_new = []  # lista (search_name, listing)
 
-    for search in config.get("searches", []):
-        name = search.get("name", search.get("url"))
-        platform = search.get("platform")
-        url = search.get("url")
+    with sync_playwright() as p:
+        browser = p.chromium.launch()
 
-        fetcher = FETCHERS.get(platform)
-        if not fetcher:
-            print(f"Nieznana platforma '{platform}' dla '{name}' — pomijam.")
-            continue
+        for search in config.get("searches", []):
+            name = search.get("name", search.get("url"))
+            platform = search.get("platform")
+            url = search.get("url")
 
-        print(f"Sprawdzam: {name} ({platform})")
-        listings = fetcher(url)
-        seen_ids = set(seen.get(name, []))
-        new_listings = [l for l in listings if l["id"] not in seen_ids]
+            parser = PARSERS.get(platform)
+            if not parser:
+                print(f"Nieznana platforma '{platform}' dla '{name}' — pomijam.")
+                continue
 
-        for listing in new_listings:
-            all_new.append((name, listing))
+            print(f"Sprawdzam: {name} ({platform})")
+            html = render_html(browser, url, wait_selector=WAIT_SELECTORS.get(platform))
+            listings = parser(html) if html else []
+            print(f"  Znaleziono na stronie: {len(listings)} ofert")
 
-        # Zapamiętujemy WSZYSTKIE aktualnie widziane id (nie tylko nowe),
-        # żeby lista nie rosła w nieskończoność i żeby ogłoszenia usunięte
-        # z wyników nie generowały fałszywych alertów po powrocie.
-        seen[name] = [l["id"] for l in listings]
+            seen_ids = set(seen.get(name, []))
+            new_listings = [l for l in listings if l["id"] not in seen_ids]
+
+            for listing in new_listings:
+                all_new.append((name, listing))
+
+            # Zapamiętujemy WSZYSTKIE aktualnie widziane id (nie tylko nowe),
+            # żeby lista nie rosła w nieskończoność i żeby ogłoszenia usunięte
+            # z wyników nie generowały fałszywych alertów po powrocie.
+            # UWAGA: jeśli render_html zwróci None (błąd), listings=[] — w
+            # takim wypadku NIE nadpisujemy pamięci pustą listą, żeby
+            # tymczasowa awaria strony nie skasowała historii.
+            if html is not None:
+                seen[name] = [l["id"] for l in listings]
+
+        browser.close()
 
     if len(all_new) == 1:
         # Dokładnie jedna nowa oferta — proste, pojedyncze powiadomienie.
