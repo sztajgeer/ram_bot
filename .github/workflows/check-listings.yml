@@ -1,0 +1,39 @@
+yaml
+name: Sprawdź nowe ogłoszenia
+
+on:
+  schedule:
+    # co 10 minut (UTC) — GitHub czasem opóźnia trochę harmonogram
+    - cron: "*/10 * * * *"
+  workflow_dispatch: {}  # pozwala odpalić ręcznie z zakładki Actions
+
+permissions:
+  contents: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Ustaw Pythona
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Zainstaluj zależności
+        run: pip install -r requirements.txt
+
+      - name: Uruchom sprawdzenie ogłoszeń
+        env:
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+        run: python check_listings.py
+
+      - name: Zapisz stan (seen.json) z powrotem do repo
+        run: |
+          git config user.name "marketplace-alert-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add data/seen.json
+          git diff --quiet --cached || git commit -m "Aktualizacja stanu ogłoszeń"
+          git push
