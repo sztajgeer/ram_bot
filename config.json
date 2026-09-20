@@ -1,0 +1,24 @@
+{
+  "searches": [
+    {
+      "name": "RAM uszkodzona - Allegro",
+      "platform": "allegro",
+      "url": "https://allegro.pl/kategoria/podzespoly-komputerowe-pamiec-ram-257226?order=n&strategy=NO_FALLBACK&pojemnosc-calkowita=16%20GB&pojemnosc-calkowita=32%20GB&pojemnosc-calkowita=48%20GB&pojemnosc-calkowita=64%20GB&stan-grupa=uszkodzone&typ-pamieci=DDR4&typ-pamieci=DDR5&offerTypeBuyNow=1"
+    },
+    {
+      "name": "RAM uszkodzona - Allegro Lokalnie",
+      "platform": "allegro_lokalnie",
+      "url": "https://allegrolokalnie.pl/oferty/podzespoly-komputerowe/pamiec-ram-257226/uszkodzone?typ-pamieci=ddr5&typ-pamieci=lpddr5x&typ-pamieci=lpddr5&typ-pamieci=ddr4&sort=startingTime-desc"
+    },
+    {
+      "name": "RAM - Vinted",
+      "platform": "vinted",
+      "url": "https://www.vinted.pl/catalog?search_text=&catalog[]=3603&status_ids[]=4&status_ids[]=7&order=newest_first"
+    },
+    {
+      "name": "RAM uszkodzona - OLX",
+      "platform": "olx",
+      "url": "https://www.olx.pl/elektronika/komputery/podzespoly-i-czesci/pamieci-ram/?search%5Bfilter_enum_state%5D%5B0%5D=damaged&search%5Bfilter_enum_typeofmemory%5D%5B0%5D=ddr4&search%5Bfilter_enum_typeofmemory%5D%5B1%5D=ddr5&search%5Border%5D=relevance%3Adesc"
+    }
+  ]
+}
