@@ -2,8 +2,13 @@ name: Sprawdź nowe ogłoszenia
 
 on:
   schedule:
-    # co 10 minut (UTC) — GitHub czasem opóźnia trochę harmonogram
-    - cron: "*/10 * * * *"
+    # co godzinę, w pełnych godzinach (UTC) — GitHub czasem opóźnia trochę harmonogram.
+    # Chcesz częściej? Zmień np. na "*/30 * * * *" (co 30 min), ale sprawdź w
+    # Settings → Actions swojego repo ile minut/miesiąc masz jeszcze w limicie,
+    # zanim zwiększysz częstotliwość — instalacja przeglądarki w każdym
+    # uruchomieniu potrafi zjeść limit szybciej niż się wydaje. Repo publiczne
+    # nie ma tego limitu wcale.
+    - cron: "0 * * * *"
   workflow_dispatch: {}  # pozwala odpalić ręcznie z zakładki Actions
 
 permissions:
@@ -12,6 +17,7 @@ permissions:
 jobs:
   check:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -21,8 +27,11 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Zainstaluj zależności
+      - name: Zainstaluj zależności Pythona
         run: pip install -r requirements.txt
+
+      - name: Zainstaluj przeglądarkę Playwright (Chromium)
+        run: playwright install --with-deps chromium
 
       - name: Uruchom sprawdzenie ogłoszeń
         env:
