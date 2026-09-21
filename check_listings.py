@@ -20,7 +20,9 @@ dzięki czemu bot pamięta co już zgłosił między kolejnymi odpaleniami.
 import json
 import os
 import sys
+from datetime import datetime
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 import requests
 from bs4 import BeautifulSoup
@@ -29,6 +31,10 @@ from playwright.sync_api import sync_playwright
 ROOT = Path(__file__).parent
 CONFIG_PATH = ROOT / "config.json"
 SEEN_PATH = ROOT / "data" / "seen.json"
+
+TIMEZONE = ZoneInfo("Europe/Warsaw")
+QUIET_HOURS = {0, 1, 2, 3, 4}  # 00:00–04:59 czasu polskiego — bot wtedy nic nie robi
+MAX_SEEN_PER_SEARCH = 500  # ile ostatnich id pamiętamy na wyszukiwanie (limit rozmiaru pliku)
 
 NTFY_TOPIC = os.environ.get("NTFY_TOPIC")
 NTFY_URL = f"https://ntfy.sh/{NTFY_TOPIC}" if NTFY_TOPIC else None
@@ -252,6 +258,11 @@ MAX_ITEMS_IN_MESSAGE = 15  # żeby powiadomienie nie zrobiło się absurdalnie d
 
 
 def main():
+    now = datetime.now(TIMEZONE)
+    if now.hour in QUIET_HOURS:
+        print(f"Cisza nocna ({now.strftime('%H:%M')} czasu polskiego) — pomijam sprawdzanie.")
+        return
+
     config = load_json(CONFIG_PATH, {"searches": []})
     seen = load_json(SEEN_PATH, {})
 
@@ -283,14 +294,20 @@ def main():
             for listing in new_listings:
                 all_new.append((name, listing))
 
-            # Zapamiętujemy WSZYSTKIE aktualnie widziane id (nie tylko nowe),
-            # żeby lista nie rosła w nieskończoność i żeby ogłoszenia usunięte
-            # z wyników nie generowały fałszywych alertów po powrocie.
+            # Zapamiętujemy WSZYSTKIE dotąd widziane id (nie tylko te z
+            # bieżącego sprawdzenia) — dzięki temu oferta, która chwilowo
+            # zniknie z pierwszej strony wyników (bo np. zmieni się
+            # sortowanie/trafność), a potem wróci, NIE zostanie zgłoszona
+            # jako "nowa" po raz drugi. Listę przycinamy do ostatnich
+            # MAX_SEEN_PER_SEARCH id, żeby plik nie rósł w nieskończoność.
             # UWAGA: jeśli render_html zwróci None (błąd), listings=[] — w
-            # takim wypadku NIE nadpisujemy pamięci pustą listą, żeby
-            # tymczasowa awaria strony nie skasowała historii.
+            # takim wypadku nic nie dopisujemy, żeby tymczasowa awaria
+            # strony nie wpłynęła na pamięć.
             if html is not None:
-                seen[name] = [l["id"] for l in listings]
+                existing_ids = seen.get(name, [])
+                current_ids = [l["id"] for l in listings]
+                merged = existing_ids + [i for i in current_ids if i not in existing_ids]
+                seen[name] = merged[-MAX_SEEN_PER_SEARCH:]
 
         browser.close()
 
