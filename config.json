@@ -13,7 +13,7 @@
     {
       "name": "RAM - Vinted",
       "platform": "vinted",
-      "url": "https://www.vinted.pl/catalog?search_text=&catalog[]=3603&status_ids[]=4&status_ids[]=7&order=newest_first"
+      "url": "https://www.vinted.pl/catalog?search_text=&catalog[]=3603&brand_ids[]=302646&brand_ids[]=305018&brand_ids[]=458002&brand_ids[]=515974&brand_ids[]=1352435&brand_ids[]=1630413&brand_ids[]=1763290&brand_ids[]=3318101&brand_ids[]=3720583&status_ids[]=4&status_ids[]=7&order=newest_first"
     },
     {
       "name": "RAM uszkodzona - OLX",
