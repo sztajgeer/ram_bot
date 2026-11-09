@@ -30,7 +30,8 @@
     "https://allegrolokalnie.pl/oferta/gskill-aegis-ddr4-2x8gb-3000-mhz-tm3",
     "https://allegrolokalnie.pl/oferta/patriot-viper-4-ddr4-2x4gb-3000-mhz-xy3",
     "https://allegrolokalnie.pl/oferta/goodram-irdm-x-blue-ddr4-8gb-3000mhz-cl16-6ki",
-    "https://allegrolokalnie.pl/oferta/gskill-trident-z-neo-ddr4-8gb-3600mhz-cl16"
+    "https://allegrolokalnie.pl/oferta/gskill-trident-z-neo-ddr4-8gb-3600mhz-cl16",
+    "https://allegrolokalnie.pl/oferta/crucial-micron-8gb-ddr4-2400mhz-sodimm-cl17-ct8g4sfs824a-pamiec-ram-uszk"
   ],
   "RAM - Vinted": [
     "https://www.vinted.pl/items/10084897275-ram-ddr2",
@@ -378,7 +379,12 @@
     "https://www.vinted.pl/items/10703507694-ddr3-2000mhz-3x4gb-12gb",
     "https://www.vinted.pl/items/10703464251-ddr3-1600mhz-2x8gb-16gb",
     "https://www.vinted.pl/items/10488900823",
-    "https://www.vinted.pl/items/10717836124-ddr3-8gb-x-2"
+    "https://www.vinted.pl/items/10717836124-ddr3-8gb-x-2",
+    "https://www.vinted.pl/items/10734604122-ram-laptopowy-ddr4-32gb-w-2-kosciach",
+    "https://www.vinted.pl/items/10732186707-pamiec-ram-ddr2-256mb",
+    "https://www.vinted.pl/items/10732176976-pamiec-ram-ddr3-2gb",
+    "https://www.vinted.pl/items/10732166774-pamiec-ram-ddr2-256mb",
+    "https://www.vinted.pl/items/10731281291-memoriak-es-2-db-m2-ssd"
   ],
   "RAM uszkodzona - OLX": [
     "https://www.olx.pl/d/oferta/pamiec-ram-hyperx-predator-ddr4-opis-CID99-ID1cpkrw.html",
@@ -448,7 +454,9 @@
     "https://www.olx.pl/d/oferta/ram-16gb-1x16gb-uszkodzona-CID99-ID1d84Oy.html",
     "https://www.olx.pl/d/oferta/pamiec-ram-ddr4-16gb-envinda-do-komputera-pc-stacjonarnego-dimm-uszkodzona-na-czesci-brak-obrazu-CID99-ID1d87Qf.html",
     "https://www.olx.pl/d/oferta/4x16gb-ram-64gb-razemmicronn-sk-hynixddr4-3200-ecc-rdimm-CID99-ID1d9ZqL.html",
-    "https://www.olx.pl/d/oferta/pamiec-ram-2x-8gb-16gb-CID99-ID1daleX.html"
+    "https://www.olx.pl/d/oferta/pamiec-ram-2x-8gb-16gb-CID99-ID1daleX.html",
+    "https://www.olx.pl/d/oferta/crucial-micron-8gb-ddr4-2400mhz-sodimm-cl17-ct8g4sfs824a-pamiec-ram-uszkodzona-CID99-ID1dblzZ.html",
+    "https://www.olx.pl/d/oferta/crucial-micron-8gb-ddr4-2400mhz-sodimm-cl17-ct8g4sfs824a-pamiec-ram-uszkodzona-CID99-ID1dblwu.html"
   ],
   "RAM zestawy (2+ moduły) - Allegro Lokalnie": [
     "https://allegrolokalnie.pl/oferta/pamiec-corsair-vengeance-lpx-16-gb-ddr4-2133mhz-cl13-cmk8gx4m2a2133c13r",
