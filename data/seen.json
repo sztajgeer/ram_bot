@@ -31,7 +31,9 @@
     "https://allegrolokalnie.pl/oferta/patriot-viper-4-ddr4-2x4gb-3000-mhz-xy3",
     "https://allegrolokalnie.pl/oferta/goodram-irdm-x-blue-ddr4-8gb-3000mhz-cl16-6ki",
     "https://allegrolokalnie.pl/oferta/gskill-trident-z-neo-ddr4-8gb-3600mhz-cl16",
-    "https://allegrolokalnie.pl/oferta/crucial-micron-8gb-ddr4-2400mhz-sodimm-cl17-ct8g4sfs824a-pamiec-ram-uszk"
+    "https://allegrolokalnie.pl/oferta/crucial-micron-8gb-ddr4-2400mhz-sodimm-cl17-ct8g4sfs824a-pamiec-ram-uszk",
+    "https://allegrolokalnie.pl/oferta/corsair-vengeance-16gb-ddr4-3200mhz-sodimm-cl22-cmsx16g-pamiec-ram-uszk",
+    "https://allegrolokalnie.pl/oferta/crucial-micron-16gb-ddr4-3200mhz-sodimm-cl22-ct16g4sfra32a-pamiec-ram-uszk"
   ],
   "RAM - Vinted": [
     "https://www.vinted.pl/items/10084897275-ram-ddr2",
@@ -387,7 +389,8 @@
     "https://www.vinted.pl/items/10731281291-memoriak-es-2-db-m2-ssd",
     "https://www.vinted.pl/items/10742301878-prodam-operacni-pamet-corsair-xms2-ddr2",
     "https://www.vinted.pl/items/10739164587-ramok",
-    "https://www.vinted.pl/items/10615698982-ram-hyperx-ddr4-16gb"
+    "https://www.vinted.pl/items/10615698982-ram-hyperx-ddr4-16gb",
+    "https://www.vinted.pl/items/10748619575-4gb-ddr3-kaksi-2gb-ddr-1333mhz"
   ],
   "RAM uszkodzona - OLX": [
     "https://www.olx.pl/d/oferta/pamiec-ram-hyperx-predator-ddr4-opis-CID99-ID1cpkrw.html",
@@ -461,7 +464,10 @@
     "https://www.olx.pl/d/oferta/crucial-micron-8gb-ddr4-2400mhz-sodimm-cl17-ct8g4sfs824a-pamiec-ram-uszkodzona-CID99-ID1dblzZ.html",
     "https://www.olx.pl/d/oferta/crucial-micron-8gb-ddr4-2400mhz-sodimm-cl17-ct8g4sfs824a-pamiec-ram-uszkodzona-CID99-ID1dblwu.html",
     "https://www.olx.pl/d/oferta/ram-ddr4-adata-prawdopodobnie-uszkodzony-zarezerwowany-CID99-ID1dbHM8.html",
-    "https://www.olx.pl/d/oferta/pamiec-ram-16gb-2133mhz-CID99-ID1dbPAH.html"
+    "https://www.olx.pl/d/oferta/pamiec-ram-16gb-2133mhz-CID99-ID1dbPAH.html",
+    "https://www.olx.pl/d/oferta/crucial-micron-16gb-ddr4-3200mhz-sodimm-cl22-ct16g4sfra32a-pamiec-ram-uszkodzona-CID99-ID1dcE8v.html",
+    "https://www.olx.pl/d/oferta/crucial-micron-16gb-ddr4-3200mhz-sodimm-cl22-ct16g4sfra32a-pamiec-ram-uszkodzona-CID99-ID1dcE6n.html",
+    "https://www.olx.pl/d/oferta/corsair-vengeance-16gb-ddr4-3200mhz-sodimm-cl22-cmsx16g-pamiec-ram-uszkodzona-CID99-ID1dcEqF.html"
   ],
   "RAM zestawy (2+ moduły) - Allegro Lokalnie": [
     "https://allegrolokalnie.pl/oferta/pamiec-corsair-vengeance-lpx-16-gb-ddr4-2133mhz-cl13-cmk8gx4m2a2133c13r",
@@ -519,6 +525,7 @@
     "https://allegrolokalnie.pl/oferta/gskill-aegis-ddr4-16gb-2x8gb-3000mhz-cl16-o5v",
     "https://allegrolokalnie.pl/oferta/oem-crucial-16gb-4x4gb-ddr4-oc-3000mhz-cl16",
     "https://allegrolokalnie.pl/oferta/pamiec-ram-gskill-ripjaws-v-16-gb-ddr4-2666-mhz-cl15",
-    "https://allegrolokalnie.pl/oferta/gskill-aegis-16gb-4x-4gb-ddr4-2400mhz-cl15"
+    "https://allegrolokalnie.pl/oferta/gskill-aegis-16gb-4x-4gb-ddr4-2400mhz-cl15",
+    "https://allegrolokalnie.pl/oferta/pamiec-ram-ddr4-16gb-2x8gb-hyperx-fury-2133mhz-hx421c14fb28"
   ]
 }
