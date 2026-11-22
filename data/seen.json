@@ -35,7 +35,8 @@
     "https://allegrolokalnie.pl/oferta/corsair-vengeance-16gb-ddr4-3200mhz-sodimm-cl22-cmsx16g-pamiec-ram-uszk",
     "https://allegrolokalnie.pl/oferta/crucial-micron-16gb-ddr4-3200mhz-sodimm-cl22-ct16g4sfra32a-pamiec-ram-uszk",
     "https://allegrolokalnie.pl/oferta/goodram-gr5600d564l46s16g-ddr5-16gb-5600mhz-cl46-wl7",
-    "https://allegrolokalnie.pl/oferta/uszkodzony-ram-ddr4-16gb"
+    "https://allegrolokalnie.pl/oferta/uszkodzony-ram-ddr4-16gb",
+    "https://allegrolokalnie.pl/oferta/pamiec-ram-hyperx-fury-16gb-2x8gb-ddr4-rgb-3200mhz-cl16-jeden-nie-dziala"
   ],
   "RAM - Vinted": [
     "https://www.vinted.pl/items/10084897275-ram-ddr2",
@@ -437,7 +438,9 @@
     "https://www.vinted.pl/items/10911346371-pamiec-ram-ddr4-corsair-16gb-2x8",
     "https://www.vinted.pl/items/10917626754-lot-piese-pc",
     "https://www.vinted.pl/items/10916782576-huper-x-ddr3",
-    "https://www.vinted.pl/items/10914672994-ram-ddr5-32gb"
+    "https://www.vinted.pl/items/10914672994-ram-ddr5-32gb",
+    "https://www.vinted.pl/items/10926944692-desktop-ddr3-ram-4gb-2x2gb-corsair-xms3-adata-xtreme-untested",
+    "https://www.vinted.pl/items/10922413304-ram-8-2-gb"
   ],
   "RAM uszkodzona - OLX": [
     "https://www.olx.pl/d/oferta/pamiec-ram-hyperx-predator-ddr4-opis-CID99-ID1cpkrw.html",
@@ -527,7 +530,8 @@
     "https://www.olx.pl/d/oferta/pamiec-ram-z-radiatorami-rgb-CID99-ID1dmK87.html",
     "https://www.olx.pl/d/oferta/ram-16gb-non-ecc-ddr4-niesprawny-CID99-ID1dmLtC.html",
     "https://www.olx.pl/d/oferta/uszkodzona-pamiec-ram-ddr4-kingstone-hyperx-fury-CID99-ID1dnv6u.html",
-    "https://www.olx.pl/d/oferta/kosc-ram-ddr4-16-gb-adata-2666-cl19-CID99-ID1dnbOx.html"
+    "https://www.olx.pl/d/oferta/kosc-ram-ddr4-16-gb-adata-2666-cl19-CID99-ID1dnbOx.html",
+    "https://www.olx.pl/d/oferta/pamiec-ram-hyperx-fury-16gb-2x8gb-ddr4-rgb-3200mhz-cl16-jedna-kosc-nie-dziala-CID99-ID1dorWm.html"
   ],
   "RAM zestawy (2+ moduły) - Allegro Lokalnie": [
     "https://allegrolokalnie.pl/oferta/pamiec-corsair-vengeance-lpx-16-gb-ddr4-2133mhz-cl13-cmk8gx4m2a2133c13r",
@@ -595,6 +599,10 @@
     "https://allegrolokalnie.pl/oferta/ram-8gb-ddr4-patriot-viper-3200-mhz-2x4gb",
     "https://allegrolokalnie.pl/oferta/16gb-ddr4-hyperx-predator-2800mts-cl14-4x4gb-box",
     "https://allegrolokalnie.pl/oferta/pamiec-ram-gskill-aegis-3000mhz-8gb",
-    "https://allegrolokalnie.pl/oferta/kingstone-ddr4-16gb2x8gb-3200mhz"
+    "https://allegrolokalnie.pl/oferta/kingstone-ddr4-16gb2x8gb-3200mhz",
+    "https://allegrolokalnie.pl/oferta/pamiec-ram-hyperx-fury-16gb-2x8gb-ddr4-rgb-3200mhz-cl16-jeden-nie-dziala",
+    "https://allegrolokalnie.pl/oferta/ram-16gb-2x8gb-ddr4-2400mhz-udimm-ecc-kingston",
+    "https://allegrolokalnie.pl/oferta/zestaw-ddr4-24gb-3x8gb-2133mhz-cl15-12v-kingston-amd-patriot",
+    "https://allegrolokalnie.pl/oferta/kingston-8gb-amd-8gb-patriot-8gb-ddr4-24gb-3x8gb-2133mhz-cl15-12v"
   ]
 }
